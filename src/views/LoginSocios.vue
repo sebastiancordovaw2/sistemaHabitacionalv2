@@ -4,15 +4,23 @@
         <v-row>
           
             <v-col cols="12" md="6" class="bg_login ">
-                <h1 class="text-2xl absolute left-10 text-white ">Admin<span class="font-bold">H</span></h1>
+                <h1 class="text-2xl absolute left-10 text-white ">
+                    <font-awesome-icon style="top:-3px; position:relative" icon="user" class="text-xl text-white"/>
+                    Admin<span class="font-bold">H</span>
+                </h1>
                 <div class="h-screen grid place-items-center">
                     <img width="65%" :src="imageUrl" alt="Example Image" class="example-image">
                 </div>
             </v-col> 
             <v-col cols="12" md="6">
                 <!-- Contenido de la segunda columna formulario -->
-                    <div class="p-10">
-                        <v-form v-model="valid" ref="form">
+
+                    <div class="p-10 text-left">
+
+                        <h1 class="text-2xl font-bold mb-3">¡Bienvenidos a AdminH!</h1>
+                        <p class="text-sm">Aquí podrás revisar todos los documentos que necesitarás para postular a una vivienda.</p>
+                        <p class="text-sm">También podrás acceder a información adicional sobre reuniones o estados de tu postulación. </p>
+                        <v-form v-model="valid" ref="form" class="mt-4">
                           <v-text-field
                             v-model="rut"
                             :rules="[rules.required, rules.validRut]"
