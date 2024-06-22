@@ -3,8 +3,8 @@
         
         <v-row>
           
-            <v-col cols="12" md="6" class="bg_login ">
-                <h1 class="text-2xl absolute left-10 text-white ">
+            <v-col cols="12" sm="6" class="bg_login column1">
+                <h1 class="text-2xl absolute left-10 top-3 text-white ">
                     <font-awesome-icon style="top:-3px; position:relative" icon="user" class="text-xl text-white"/>
                     Admin<span class="font-bold">H</span>
                 </h1>
@@ -12,9 +12,14 @@
                     <img width="65%" :src="imageUrl" alt="Example Image" class="example-image">
                 </div>
             </v-col> 
-            <v-col cols="12" md="6">
+            <v-col cols="12" sm="6">
                 <!-- Contenido de la segunda columna formulario -->
-
+                  <div class="bg_login p-3 sm:block md:hidden">
+                    <h1 class="text-2xl text-white ">
+                        <font-awesome-icon style="top:-3px; position:relative" icon="user" class="text-xl text-white"/>
+                        Admin<span class="font-bold">H</span>
+                    </h1>
+                  </div>
                     <div class="p-10 text-left">
 
                         <h1 class="text-2xl font-bold mb-3">¡Bienvenidos a AdminH!</h1>
@@ -125,5 +130,19 @@
     background: rgb(234,234,252);
     background: linear-gradient(242deg, rgba(234,234,252,1) 0%, rgba(158,154,246,1) 35%, rgba(130,81,251,1) 100%);
   }
+
+  .v-col-12{
+    padding: 0px;
+  }
+
+
+
+  @media (max-width: 599px) {
+    .column1 {
+        display: none !important;
+      }
+  }
+
+  
   </style>
   
