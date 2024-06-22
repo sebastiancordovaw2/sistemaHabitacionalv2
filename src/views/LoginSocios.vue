@@ -48,7 +48,7 @@
   
   <script setup>
   import { ref } from 'vue'
-  const imageUrl = ref('./src/assets/images/img_login.png');
+  const imageUrl = ref('./img/img_login.png');
   const rut = ref('')
   const numeroSocio = ref('')
   const valid = ref(false)
