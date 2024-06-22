@@ -9,5 +9,4 @@ export default defineConfig({
     vuetify({ autoImport: true })
   ],
   base:'https://sebastiancordovaw2.github.io/sistemaHabitacionalv2/',
-  
 })
