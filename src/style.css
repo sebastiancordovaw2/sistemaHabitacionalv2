@@ -63,6 +63,11 @@ button:focus-visible {
   text-align: center;
 }
 
+.blue-button {
+  background-color: #1976D2; /* Vuetify primary blue color */
+  color: white;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

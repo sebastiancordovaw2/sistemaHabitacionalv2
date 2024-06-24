@@ -23,8 +23,8 @@
                     <div class="p-10 text-left">
 
                         <h1 class="text-2xl font-bold mb-3">¡Bienvenidos a AdminH!</h1>
-                        <p class="text-sm mb-3">Aquí podrás revisar todos los documentos que necesitarás para postular a una vivienda.</p>
-                        <p class="text-sm">También podrás acceder a información adicional sobre reuniones o estados de tu postulación. </p>
+                        <p class="text-sm mb-3">Aquí podrás revisar todos los <b>documentos</b> que necesitarás para postular a una <b>vivienda</b>.</p>
+                        <p class="text-sm">También podrás acceder a <b>información</b> adicional sobre <b>reuniones</b> o estados de tu postulación. </p>
                         <v-form v-model="valid" ref="form" class="mt-4">
                           <v-text-field
                             v-model="rut"
