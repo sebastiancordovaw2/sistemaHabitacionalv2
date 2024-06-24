@@ -12,6 +12,8 @@
     import sidebar from '../components/Dashboard/Sidebar.vue';
     import sociosCard from './control/socios/card.vue';
     import reunionesCard from './control/reuniones/card.vue';
+
+    alert(import.meta.env.VITE_API_URL)
   </script>
   
   <style scoped>
