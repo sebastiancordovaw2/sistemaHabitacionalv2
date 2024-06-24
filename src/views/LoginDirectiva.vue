@@ -59,10 +59,20 @@ const rules = {
   }
 }
 
-const submit = () => {
+const submit = async () => {
   if (form.value.validate()) {
-      console.log('Formulario válido')
-      // Aquí puedes manejar la lógica de login
+      try {
+        const response = await axios.post(import.meta.env.VITE_API_URL+'api/auth/login', {
+          username: this.username,
+          password: this.password
+        });
+        const token = response.data.token;
+        localStorage.setItem('token', token);
+        alert('Inicio de sesión exitoso');
+      } catch (error) {
+        console.error('Error al iniciar sesión', error);
+        alert('Error al iniciar sesión');
+      }
   }
 }
 </script>
