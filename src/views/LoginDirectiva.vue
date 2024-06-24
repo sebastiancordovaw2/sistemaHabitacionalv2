@@ -63,8 +63,8 @@ const submit = async () => {
   if (form.value.validate()) {
       try {
         const response = await axios.post(import.meta.env.VITE_API_URL+'api/auth/login', {
-          username: this.username,
-          password: this.password
+          email: email.value,
+          password: password.value
         });
         const token = response.data.token;
         localStorage.setItem('token', token);
