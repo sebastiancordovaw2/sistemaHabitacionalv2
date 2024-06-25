@@ -45,6 +45,8 @@
 
 <script setup>
 import { ref } from 'vue'
+
+import axios from 'axios';
 const imageUrl = ref('./img/img_login.png');
 const email = ref('')
 const password = ref('')
@@ -66,12 +68,12 @@ const submit = async () => {
           email: email.value,
           password: password.value
         });
-        const token = response.data.token;
-        localStorage.setItem('token', token);
-        alert('Inicio de sesión exitoso');
+        //const token = response.data.token;
+        //localStorage.setItem('token', token);
+        console.log('Inicio de sesión exitoso');
       } catch (error) {
         console.error('Error al iniciar sesión', error);
-        alert('Error al iniciar sesión');
+        console.log('Error al iniciar sesión');
       }
   }
 }
