@@ -45,13 +45,18 @@
 
 <script setup>
 import { ref } from 'vue'
-
+import { useRouter } from 'vue-router';
 import axios from 'axios';
 const imageUrl = ref('./img/img_login.png');
 const email = ref('')
 const password = ref('')
 const valid = ref(false)
 const form = ref(null)
+const router = useRouter();
+
+import { useAuthStore } from '../stores/useAuthStore'
+const authStore = useAuthStore()
+const { login } = authStore
 
 const rules = {
   required: value => !!value || 'Este campo es requerido',
@@ -68,12 +73,12 @@ const submit = async () => {
           email: email.value,
           password: password.value
         });
-        //const token = response.data.token;
-        //localStorage.setItem('token', token);
-        console.log('Inicio de sesión exitoso');
+        const {token, id} = response.data;
+        login(token, id)
+        router.push('/dashboard');
+        console.log('Inicio de sesión exitoso!');
       } catch (error) {
-        console.error('Error al iniciar sesión', error);
-        console.log('Error al iniciar sesión');
+        console.log('Error al iniciar sesión', error);
       }
   }
 }
