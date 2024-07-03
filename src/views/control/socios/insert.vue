@@ -109,12 +109,21 @@ const { token, usuario_id } = authStore
 const valid = ref(false)
 const form = ref(null)
 
+const getCurrentDate = () => {
+      const today = new Date();
+      const day = String(today.getDate()).padStart(2, '0');
+      const month = String(today.getMonth() + 1).padStart(2, '0'); // Enero es 0
+      const year = today.getFullYear();
+
+      return `${day}/${month}/${year}`;
+    }
+
 const initialFormState = {
   numeroMiembro: '',
   nombreCompleto: '',
   edad: '',
   estadoCivil: null,
-  fechaIngreso: '',
+  fechaIngreso: getCurrentDate(),
   profesion: '',
   domicilio: '',
   rut: '',
@@ -127,7 +136,6 @@ const initialFormState = {
   correo: '',
   usuario_id: usuario_id
 };
-
 const formData = ref({...initialFormState})
 
 const rules = {
@@ -152,18 +160,14 @@ const rules = {
   },
   validDate: value => 
   {
-
     const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/
     if(value != "")
     {
       if (!dateRegex.test(value)) return 'Formato de fecha inválido'
       const [day, month, year ] = value.split('/').map(Number)
-      console.log(year, month, day);
       const date = new Date(year, month - 1, day)
-      console.log(date.getDate(), date.getFullYear(),date.getMonth() );
       return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day || 'Fecha inválida'
     }
-    
   }
 }
 
@@ -215,7 +219,7 @@ const submit = async () => {
       });
       
       formData.value = { ...initialFormState };
-      showAlert("¡Exito!", "SOcio creado con exito", "success");
+      showAlert("¡Exito!", "Socio creado con exito", "success");
       // Manejar la respuesta de la API, mostrar mensaje de éxito, etc.
     } catch (error) {
       showAlert("¡Error!", error.response.data.message, "error");
@@ -231,6 +235,8 @@ const showAlert = (title, text, icon) => {
     icon
   })
 }
+
+
 </script>
 
 <style scoped>
