@@ -32,7 +32,6 @@
           :rules="[rules.validDate]"
           label="Fecha de ingreso"
           required
-          @change="formatDate"
         ></v-text-field>
         <v-text-field
           v-model="formData.profesion"

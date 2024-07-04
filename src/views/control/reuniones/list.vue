@@ -20,12 +20,18 @@
             :server-items-length="totalItems"
             @update:options="fetchData"
           >
-            <template v-slot:top>
-              <v-toolbar flat>
-                <v-toolbar-title>Lista de Reuniones</v-toolbar-title>
-                <v-divider class="mx-4" inset vertical></v-divider>
-              </v-toolbar>
-            </template>
+          <template v-slot:item.fecha="{ item }">
+            <router-link :to="{ name: 'reunionesUpdate', query: { id: item.id } }">{{item.fecha }}</router-link>
+          </template>
+
+          <template v-slot:item.activa="{ item }">
+            <router-link :to="{ name: 'reunionesUpdate', params: { id: item.activa } }">
+              <v-chip :color="getColor(item.activa)">
+                {{ (item.activa)?"Si":"No" }}
+              </v-chip>
+            </router-link>
+          </template>
+
           </v-data-table>
         </v-col>
       </v-row>
@@ -37,6 +43,10 @@
   import { ref, watch } from 'vue'
   import axios from 'axios'
   import { useRouter } from 'vue-router'
+  import Swal from 'sweetalert2';
+  import { useAuthStore } from '../../../stores/useAuthStore'
+  const authStore = useAuthStore()
+  const { token, usuario_id } = authStore
   
   const router = useRouter()
   const search = ref('')
@@ -48,30 +58,43 @@
     sortBy: [],
     sortDesc: [],
   })
+
+  const getColor =  (activo) => {
+        if (activo) return 'green'
+        else if (!activo) return 'red'
+      }
   
   const headers = [
-    { text: 'Fecha', value: 'fecha' }, 
-    { text: 'Hora', value: 'hora' },
-    { text: 'Lugar', value: 'lugar' },
-    { text: 'Activa', value: 'activa' },
+    { title: 'Fecha', key: 'fecha' }, 
+    { title: 'Lugar', key: 'lugar' },
+    { title: 'Activa', key: 'activa' },
   ]
   
   const fetchData = () => {
-    const { page, itemsPerPage } = options.value
+    const { page, itemsPerPage, sortBy, sortDesc } = options.value
     axios
-      .get('https://api.example.com/socios', {
-        params: {
+    .post(import.meta.env.VITE_API_URL+'api/reuniones/list', 
+    {
           search: search.value,
           page,
           itemsPerPage,
-        },
-      })
+          sortBy: sortBy.length > 0 ? sortBy[0] : undefined,
+          sortDesc: sortDesc.length > 0 ? sortDesc[0] : undefined,
+          usuario_id
+      },
+      {
+        headers: {
+          Authorization: `${token}`
+        }
+      }
+      )
       .then((response) => {
         items.value = response.data.items
         totalItems.value = response.data.total
       })
       .catch((error) => {
         console.error(error)
+        showAlert("¡Error!", error.response.data.message, "error");
       })
   }
   
@@ -79,6 +102,14 @@
     router.push('/dashboard/reuniones/insert') // Reemplaza con la ruta correcta para agregar un nuevo socio
   }
   
+  const showAlert = (title, text, icon) => {
+    Swal.fire({
+      title,
+      text,
+      icon
+    })
+  }
+
   // Fetch data initially
   fetchData()
   

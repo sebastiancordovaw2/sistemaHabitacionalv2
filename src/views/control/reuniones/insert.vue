@@ -10,7 +10,6 @@
             :rules="[rules.required]"
             label="Fecha de reunión"
             required
-            @change="formatDate"
           ></v-text-field>
           <v-text-field
             v-model="formData.hora"
@@ -44,17 +43,25 @@
   <script setup>
   import sidebar from '../../../components/Dashboard/Sidebar.vue';
   import { ref } from 'vue';
+  import Swal from 'sweetalert2';
+  import { useAuthStore } from '../../../stores/useAuthStore'
+  import axios from 'axios';
+  const authStore = useAuthStore()
+  const { token, usuario_id } = authStore
   
   const valid = ref(false);
   const form = ref(null);
-  
-  const formData = ref({
+
+  const initialFormState = {
     fechaReunion: '',
     hora: '',
     lugar: '',
     descripcion: '',
-    activa: false
-  });
+    activa: false,
+    usuario_id: usuario_id
+  }
+  
+  const formData = ref({...initialFormState})
   
   const rules = {
     required: value => !!value || 'Este campo es requerido'
@@ -70,12 +77,34 @@
     formData.value.hora = `${hour}:${minute}`;
   };
   
-  const submit = () => {
+  const submit = async () => {
     if (form.value.validate()) {
-      console.log('Formulario válido');
-      // Aquí puedes manejar la lógica de inserción de datos
+
+      try {
+      const response = await axios.post(import.meta.env.VITE_API_URL+'api/reuniones/insert', formData.value, {
+        headers: {
+          Authorization: `${token}`
+        }
+      });
+      
+      formData.value = { ...initialFormState };
+      showAlert("¡Exito!", "Reunión creada con exito", "success");
+      // Manejar la respuesta de la API, mostrar mensaje de éxito, etc.
+    } catch (error) {
+      showAlert("¡Error!", error.response.data.message, "error");
+      // Manejar el error, mostrar mensaje de error, etc.
+    }
+      
     }
   };
+
+  const showAlert = (title, text, icon) => {
+  Swal.fire({
+    title,
+    text,
+    icon
+  })
+}
   </script>
   
   <style scoped>

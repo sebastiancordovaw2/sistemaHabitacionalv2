@@ -32,7 +32,6 @@
           :rules="[rules.validDate]"
           label="Fecha de ingreso"
           required
-          @change="formatDate"
         ></v-text-field>
         <v-text-field
           v-model="formData.profesion"
@@ -215,7 +214,7 @@ const formatDate = () => {
 const dataUpdate = async () => {
 
     try {
-      const response = await axios.post(import.meta.env.VITE_API_URL+'api/socios/getSocioUpdate', { usuario_id:id} ,
+      const response = await axios.post(import.meta.env.VITE_API_URL+'api/socios/getSocioUpdate', { socio_id:id} ,
       {
         headers: {
         Authorization: `${token}`
