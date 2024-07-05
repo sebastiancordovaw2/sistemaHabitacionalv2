@@ -50,13 +50,11 @@
         </template>
 
         <template v-slot:item.activo="{ item }">
-          <router-link :to="{ name: 'sociosUpdate', params: { id: item.numero_socio } }">
+          <router-link :to="{ name: 'sociosUpdate', query: { id: item.numero_socio } }">
             <v-chip :color="getColor(item.activo)">
               {{ (item.activo)?"Si":"No" }}
             </v-chip>
-          </router-link>
-
-          
+          </router-link>          
         </template>
 
         </v-data-table>

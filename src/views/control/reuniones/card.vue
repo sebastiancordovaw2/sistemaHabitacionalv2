@@ -2,8 +2,8 @@
         <v-col cols="12" sm="6">
             <v-card>
                 <v-card-title class="text-left">Reuniones</v-card-title>
-                <v-card-subtitle class="text-left">3 Reuniones</v-card-subtitle>
-                <v-card-text class="text-left">Última reunión 3 de Ago. 2024</v-card-text>
+                <v-card-subtitle class="text-left">{{numeroReuniones}} Reuniones</v-card-subtitle>
+                <v-card-text class="text-left">Última reunión {{fechaFormateada}}</v-card-text>
                 <v-card-actions>
                     <router-link to="/dashboard/reuniones">
                       <v-btn class="blue-button" text>Administrar</v-btn>
@@ -17,6 +17,37 @@
   </template>
   
   <script setup>
+
+import { onMounted, ref } from 'vue'
+import axios from 'axios'
+import { useAuthStore } from '../../../stores/useAuthStore'
+const authStore = useAuthStore()
+const { token, usuario_id } = authStore
+
+const numeroReuniones = ref(0);
+const fechaFormateada= ref('');
+const fetchData = async () => {
+  await axios
+    .post(import.meta.env.VITE_API_URL+'api/reuniones/count', {},
+      {
+        headers: {
+          Authorization: `${token}`
+        }
+      }
+    )
+    .then((response) => {
+      numeroReuniones.value = response.data.count
+      fechaFormateada.value = response.data.fecha_formateada
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+}
+
+  onMounted(()=>{
+    fetchData();
+  })
+
 
   </script>
   

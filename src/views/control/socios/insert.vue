@@ -88,6 +88,12 @@
             Votación
           </label>
         </div>
+        <hr>
+        <v-select
+          v-model="formData.reunion"
+          :items=reuniones
+          label="Reunión"
+        ></v-select>
         <v-btn :disabled="!valid" @click="submit" color="blue">Ingresar</v-btn>
       </v-form>
     </div>
@@ -96,14 +102,17 @@
 
 <script setup>
 import sidebar from '../../../components/Dashboard/Sidebar.vue';
-import { ref } from 'vue'
+import {onMounted,  ref } from 'vue'
 import axios from 'axios';
-
+import { useRoute } from 'vue-router'
 import Swal from 'sweetalert2';
 
 import { useAuthStore } from '../../../stores/useAuthStore'
 const authStore = useAuthStore()
 const { token, usuario_id } = authStore
+
+const route = useRoute()
+const id = route.query.id
 
 const valid = ref(false)
 const form = ref(null)
@@ -116,6 +125,8 @@ const getCurrentDate = () => {
 
       return `${day}/${month}/${year}`;
     }
+
+let reuniones = ref([]);
 
 const initialFormState = {
   numeroMiembro: '',
@@ -133,7 +144,8 @@ const initialFormState = {
   firma: true,
   votacion: true,
   correo: '',
-  usuario_id: usuario_id
+  usuario_id: usuario_id,
+  reunion: null
 };
 const formData = ref({...initialFormState})
 
@@ -226,6 +238,34 @@ const submit = async () => {
     }
   }
 }
+
+
+const dataReuniones = async () => {
+
+  try {
+    const response = await axios.post(import.meta.env.VITE_API_URL+'api/reuniones/getSelect',{},
+    {
+      headers: {
+      Authorization: `${token}`
+    }
+  });
+
+  response.data.items.forEach(item => {
+    const { id, fechas} = item;
+    reuniones.value.push({ value :id, title:fechas });
+  });
+
+  //showAlert("¡Exito!", "Socio creado con exito", "success");
+  // Manejar la respuesta de la API, mostrar mensaje de éxito, etc.
+} catch (error) {
+  showAlert("¡Error!", error.response.data.message, "error");
+  // Manejar el error, mostrar mensaje de error, etc.
+}
+}
+
+onMounted(()=>{
+  dataReuniones();
+})
 
 const showAlert = (title, text, icon) => {
   Swal.fire({

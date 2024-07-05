@@ -25,7 +25,7 @@
           </template>
 
           <template v-slot:item.activa="{ item }">
-            <router-link :to="{ name: 'reunionesUpdate', params: { id: item.activa } }">
+            <router-link :to="{ name: 'reunionesUpdate', query: { id: item.id } }">
               <v-chip :color="getColor(item.activa)">
                 {{ (item.activa)?"Si":"No" }}
               </v-chip>

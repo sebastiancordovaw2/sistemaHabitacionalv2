@@ -93,7 +93,36 @@
             Activo
           </label>
         </div>
-        <v-btn :disabled="!valid" @click="submit" color="blue">Actualizar
+        <hr>
+        <v-select
+          v-model="formData.reunion"
+          :items=reuniones
+          label="Reunión"
+        ></v-select>
+
+
+        <v-list>
+          <v-list-item
+            v-for="(reunion, index) in socioreuniones"
+            :key="reunion.id"
+          >
+            <v-list-item-content>
+              <v-list-item-title>{{ reunion.fechas }}</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-btn class="mr-3" :color="getColor(reunion.asistencia)" icon @click="asistenciaReunion(reunion.id,reunion.asistencia)">
+                {{ (reunion.asistencia)?"Si":"No" }}
+              </v-btn>
+              <v-btn color="red"  icon @click="eliminarReunion(reunion.id)">
+                <v-icon>mdi-delete</v-icon>
+              </v-btn>
+            </v-list-item-action>
+            <hr>
+          </v-list-item>
+        </v-list>
+
+
+        <v-btn style="width: 100%; margin-top: 16px;" :disabled="!valid" @click="submit" color="blue">Actualizar
           
         </v-btn>
       </v-form>
@@ -111,6 +140,9 @@ import Swal from 'sweetalert2';
 import { useAuthStore } from '../../../stores/useAuthStore'
 const authStore = useAuthStore()
 const { token, usuario_id } = authStore
+let reuniones = ref([]);
+
+let socioreuniones = ref([]);
 
 const route = useRoute()
 const id = route.query.id
@@ -135,10 +167,16 @@ const initialFormState = {
   votacion: true,
   correo: '',
   usuario_id: usuario_id,
-  activo: true
+  activo: true,
+  reunion: null
 };
 
 const formData = ref({...initialFormState})
+
+const getColor =  (activo) => {
+        if (activo) return 'green'
+        else if (!activo) return 'red'
+      }
 
 const rules = {
   required: value => !!value || 'Este campo es requerido',
@@ -239,7 +277,8 @@ const dataUpdate = async () => {
         correo: response.data.items.correo,
         usuario_id: usuario_id,
         activo: response.data.items.activo,
-        id_socio:id
+        id_socio:id,
+        reunion:null,
       };
 
       //showAlert("¡Exito!", "Socio creado con exito", "success");
@@ -250,9 +289,6 @@ const dataUpdate = async () => {
     }
 }
 
-onMounted(()=>{
-  dataUpdate();
-})
 const submit = async () => {
   if (form.value.validate()) {
     try {
@@ -261,7 +297,10 @@ const submit = async () => {
           Authorization: `${token}`
         }
       });
-      
+     
+      setTimeout(() => {
+        dataSocioReunion();
+      }, 500); 
       showAlert("¡Exito!", "Socio Actualizado con exito", "success");
       // Manejar la respuesta de la API, mostrar mensaje de éxito, etc.
     } catch (error) {
@@ -270,6 +309,56 @@ const submit = async () => {
     }
   }
 }
+
+const dataReuniones = async () => {
+
+try {
+  const response = await axios.post(import.meta.env.VITE_API_URL+'api/reuniones/getSelect',{},
+  {
+    headers: {
+    Authorization: `${token}`
+  }
+});
+
+response.data.items.forEach(item => {
+  const { id, fechas} = item;
+  reuniones.value.push({ value :id, title:fechas });
+});
+
+//showAlert("¡Exito!", "Socio creado con exito", "success");
+// Manejar la respuesta de la API, mostrar mensaje de éxito, etc.
+} catch (error) {
+showAlert("¡Error!", error.response.data.message, "error");
+// Manejar el error, mostrar mensaje de error, etc.
+}
+}
+
+
+const dataSocioReunion = async () => {
+
+try {
+  const response = await axios.post(import.meta.env.VITE_API_URL+'api/socioreunion/getSocioReunion',{socio_id:id},
+  {
+    headers: {
+    Authorization: `${token}`
+  }
+});
+socioreuniones.value = response.data.items
+
+//showAlert("¡Exito!", "Socio creado con exito", "success");
+// Manejar la respuesta de la API, mostrar mensaje de éxito, etc.
+} catch (error) {
+showAlert("¡Error!", error.response.data.message, "error");
+// Manejar el error, mostrar mensaje de error, etc.
+}
+}
+
+onMounted(()=>{
+dataUpdate();
+dataReuniones();
+dataSocioReunion();
+
+})
 
 const showAlert = (title, text, icon) => {
   Swal.fire({
@@ -317,6 +406,65 @@ function formatDateToDDMMYYYY(date) {
   }
 }
 
+const eliminarReunion = async (reunion_id) => {
+
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: "Estás tratando de eliminar a un socio de una reunión",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Sí, actualizar!'
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+  try {
+    const response = await axios.post(import.meta.env.VITE_API_URL+'api/socioreunion/setSocioReunion',{usuario_id: usuario_id,socio_id:id, reunion_id, asistencia: null},
+    {
+      headers: {
+      Authorization: `${token}`
+    }
+  });
+  dataSocioReunion();
+  showAlert("¡Exito!", "Socio creado con exito", "success");
+  // Manejar la respuesta de la API, mostrar mensaje de éxito, etc.
+  } catch (error) {
+  showAlert("¡Error!", error.response.data.message, "error");
+  // Manejar el error, mostrar mensaje de error, etc.
+  }
+ } });
+};
+
+
+const asistenciaReunion = async (reunion_id, value) => {
+
+Swal.fire({
+  title: '¿Estás seguro?',
+  text: "Estás tratando de actualizar la asistencia de un socio a una reunión",
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonColor: '#3085d6',
+  cancelButtonColor: '#d33',
+  confirmButtonText: 'Sí, actualizar!'
+}).then(async (result) => {
+  if (result.isConfirmed) {
+try {
+  const response = await axios.post(import.meta.env.VITE_API_URL+'api/socioreunion/setSocioReunion',{usuario_id: usuario_id,socio_id:id, reunion_id, asistencia: !value},
+  {
+    headers: {
+    Authorization: `${token}`
+  }
+});
+dataSocioReunion();
+showAlert("¡Exito!", "Socio creado con exito", "success");
+// Manejar la respuesta de la API, mostrar mensaje de éxito, etc.
+} catch (error) {
+showAlert("¡Error!", error.response.data.message, "error");
+// Manejar el error, mostrar mensaje de error, etc.
+}
+} });
+};
+
 const validDate =  ( value ) => 
 {
   const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/
@@ -333,11 +481,6 @@ const validDate =  ( value ) =>
 .v-card {
   padding: 16px;
   border-radius: 8px;
-}
-
-.v-btn {
-  width: 100%;
-  margin-top: 16px;
 }
 
 .bg_login {
