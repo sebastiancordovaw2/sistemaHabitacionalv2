@@ -194,7 +194,7 @@ const rules = {
   },
   email: value => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if(value != ""){
+    if(value.trim() != ""){
       return emailRegex.test(value) || 'Correo inválido'
     }
   },
